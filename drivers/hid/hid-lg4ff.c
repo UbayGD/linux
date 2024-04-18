@@ -32,7 +32,8 @@
 #define LG4FF_MODE_DFGT_IDX 4
 #define LG4FF_MODE_G27_IDX 5
 #define LG4FF_MODE_G29_IDX 6
-#define LG4FF_MODE_MAX_IDX 7
+#define LG4FF_MODE_G923_PS_IDX 7
+#define LG4FF_MODE_MAX_IDX 8
 
 #define LG4FF_MODE_NATIVE BIT(LG4FF_MODE_NATIVE_IDX)
 #define LG4FF_MODE_DFEX BIT(LG4FF_MODE_DFEX_IDX)
@@ -41,6 +42,7 @@
 #define LG4FF_MODE_DFGT BIT(LG4FF_MODE_DFGT_IDX)
 #define LG4FF_MODE_G27 BIT(LG4FF_MODE_G27_IDX)
 #define LG4FF_MODE_G29 BIT(LG4FF_MODE_G29_IDX)
+#define LG4FF_MODE_G923_PS BIT(LG4FF_MODE_G923_PS_IDX)
 
 #define LG4FF_DFEX_TAG "DF-EX"
 #define LG4FF_DFEX_NAME "Driving Force / Formula EX"
@@ -54,6 +56,8 @@
 #define LG4FF_G29_NAME "G29 Racing Wheel"
 #define LG4FF_DFGT_TAG "DFGT"
 #define LG4FF_DFGT_NAME "Driving Force GT"
+#define LG4FF_G923_PS_TAG = "G923-PS"
+#define LG4FF_G923_PS_NAME = "G923 Racing Wheel for PlayStation 4 and PC"
 
 #define LG4FF_FFEX_REV_MAJ 0x21
 #define LG4FF_FFEX_REV_MIN 0x00
@@ -138,6 +142,7 @@ static const struct lg4ff_wheel lg4ff_devices[] = {
 	{USB_DEVICE_ID_LOGITECH_DFGT_WHEEL,  lg4ff_wheel_effects, 40, 900, lg4ff_set_range_g25},
 	{USB_DEVICE_ID_LOGITECH_G27_WHEEL,   lg4ff_wheel_effects, 40, 900, lg4ff_set_range_g25},
 	{USB_DEVICE_ID_LOGITECH_G29_WHEEL,   lg4ff_wheel_effects, 40, 900, lg4ff_set_range_g25},
+	{USB_DEVICE_ID_LOGITECH_G923_PS_WHEEL,   lg4ff_wheel_effects, 40, 900, lg4ff_set_range_g25},
 	{USB_DEVICE_ID_LOGITECH_MOMO_WHEEL2, lg4ff_wheel_effects, 40, 270, NULL},
 	{USB_DEVICE_ID_LOGITECH_WII_WHEEL,   lg4ff_wheel_effects, 40, 270, NULL}
 };
@@ -158,6 +163,9 @@ static const struct lg4ff_multimode_wheel lg4ff_multimode_wheels[] = {
 	{USB_DEVICE_ID_LOGITECH_G29_WHEEL,
 	 LG4FF_MODE_NATIVE | LG4FF_MODE_G29 | LG4FF_MODE_G27 | LG4FF_MODE_G25 | LG4FF_MODE_DFGT | LG4FF_MODE_DFP | LG4FF_MODE_DFEX,
 	 LG4FF_G29_TAG, LG4FF_G29_NAME},
+	{USB_DEVICE_ID_LOGITECH_G923_PS_WHEEL,
+	 LG4FF_MODE_NATIVE | LG4FF_MODE_G923_PS | LG4FF_MODE_G29 | LG4FF_MODE_G27 | LG4FF_MODE_G25 | LG4FF_MODE_DFGT | LG4FF_MODE_DFP | LG4FF_MODE_DFEX,
+	 LG4FF_G923_PS_TAG, LG4FF_G93_PS_NAME},
 };
 
 static const struct lg4ff_alternate_mode lg4ff_alternate_modes[] = {
@@ -168,6 +176,7 @@ static const struct lg4ff_alternate_mode lg4ff_alternate_modes[] = {
 	[LG4FF_MODE_DFGT_IDX] = {USB_DEVICE_ID_LOGITECH_DFGT_WHEEL, LG4FF_DFGT_TAG, LG4FF_DFGT_NAME},
 	[LG4FF_MODE_G27_IDX] = {USB_DEVICE_ID_LOGITECH_G27_WHEEL, LG4FF_G27_TAG, LG4FF_G27_NAME},
 	[LG4FF_MODE_G29_IDX] = {USB_DEVICE_ID_LOGITECH_G29_WHEEL, LG4FF_G29_TAG, LG4FF_G29_NAME},
+	[LG4FF_MODE_G923_PS_IDX] = {USB_DEVICE_ID_LOGITECH_G923_PS_WHEEL, LG4FF_G923_PS_TAG, LG4FF_G93_PS_NAME},
 };
 
 /* Multimode wheel identificators */
@@ -213,8 +222,24 @@ static const struct lg4ff_wheel_ident_info lg4ff_g29_ident_info2 = {
 	USB_DEVICE_ID_LOGITECH_G29_WHEEL
 };
 
+static const struct lg4ff_wheel_ident_info lg4ff_g923ps_ident_info = {
+	LG4FF_MODE_G923_PS | LG4FF_MODE_G29 | LG4FF_MODE_G27 | LG4FF_MODE_G25 | LG4FF_MODE_DFGT | LG4FF_MODE_DFP | LG4FF_MODE_DFEX,
+	0xfff8,
+	0x1350,
+	USB_DEVICE_ID_LOGITECH_G923_PS_WHEEL
+};
+
+static const struct lg4ff_wheel_ident_info lg4ff_g923ps_ident_info2 = {
+	LG4FF_MODE_G923_PS | LG4FF_MODE_G29 | LG4FF_MODE_G27 | LG4FF_MODE_G25 | LG4FF_MODE_DFGT | LG4FF_MODE_DFP | LG4FF_MODE_DFEX,
+	0xff00,
+	0x8900,
+	USB_DEVICE_ID_LOGITECH_G923_PS_WHEEL
+};
+
 /* Multimode wheel identification checklists */
 static const struct lg4ff_wheel_ident_info *lg4ff_main_checklist[] = {
+	&lg4ff_g923ps_ident_info,
+	&lg4ff_g923ps_ident_info2,
 	&lg4ff_g29_ident_info,
 	&lg4ff_g29_ident_info2,
 	&lg4ff_dfgt_ident_info,
@@ -259,6 +284,12 @@ static const struct lg4ff_compat_mode_switch lg4ff_mode_switch_ext09_g29 = {
 	2,
 	{0xf8, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00,	/* Revert mode upon USB reset */
 	 0xf8, 0x09, 0x05, 0x01, 0x01, 0x00, 0x00}	/* Switch mode to G29 with detach */
+};
+
+static const struct lg4ff_compat_mode_switch lg4ff_mode_switch_ext09_g923ps = {
+	2,
+	{0xf8, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00,	/* Revert mode upon USB reset */
+	 0xf8, 0x09, 0x05, 0x01, 0x01, 0x00, 0x00}	/* Switch mode to G923 PS with detach */
 };
 
 /* EXT_CMD1 - Understood by DFP, G25, G27 and DFGT */
@@ -356,6 +387,7 @@ int lg4ff_raw_event(struct hid_device *hdev, struct hid_report *report,
 			break;
 		case USB_DEVICE_ID_LOGITECH_DFGT_WHEEL:
 		case USB_DEVICE_ID_LOGITECH_G29_WHEEL:
+		case USB_DEVICE_ID_LOGITECH_G923_PS_WHEEL:
 			offset = 6;
 			break;
 		case USB_DEVICE_ID_LOGITECH_WII_WHEEL:
@@ -737,6 +769,25 @@ static const struct lg4ff_compat_mode_switch *lg4ff_get_mode_switch_command(cons
 		case USB_DEVICE_ID_LOGITECH_G29_WHEEL:
 			return &lg4ff_mode_switch_ext09_g29;
 		/* G29 can only be switched to DF-EX, DFP, DFGT, G25, G27 or its native mode */
+		default:
+			return NULL;
+		}
+		break;
+	case USB_DEVICE_ID_LOGITECH_G923_PS_WHEEL:
+		switch (target_product_id) {
+		case USB_DEVICE_ID_LOGITECH_DFP_WHEEL:
+			return &lg4ff_mode_switch_ext09_dfp;
+		case USB_DEVICE_ID_LOGITECH_DFGT_WHEEL:
+			return &lg4ff_mode_switch_ext09_dfgt;
+		case USB_DEVICE_ID_LOGITECH_G25_WHEEL:
+			return &lg4ff_mode_switch_ext09_g25;
+		case USB_DEVICE_ID_LOGITECH_G27_WHEEL:
+			return &lg4ff_mode_switch_ext09_g27;
+		case USB_DEVICE_ID_LOGITECH_G29_WHEEL:
+			return &lg4ff_mode_switch_ext09_g29;
+		case USB_DEVICE_ID_LOGITECH_G923_PS_WHEEL:
+			return &lg4ff_mode_switch_ext09_g923ps;
+		/* G92 PS can only be switched to DF-EX, DFP, DFGT, G25, G27, G29 or its native mode */
 		default:
 			return NULL;
 		}
@@ -1391,13 +1442,14 @@ int lg4ff_init(struct hid_device *hid)
 		entry->wdata.set_range(hid, entry->wdata.range);
 
 #ifdef CONFIG_LEDS_CLASS
-	/* register led subsystem - G27/G29 only */
+	/* register led subsystem - G27/G29/G923 only */
 	entry->wdata.led_state = 0;
 	for (j = 0; j < 5; j++)
 		entry->wdata.led[j] = NULL;
 
 	if (lg4ff_devices[i].product_id == USB_DEVICE_ID_LOGITECH_G27_WHEEL ||
-			lg4ff_devices[i].product_id == USB_DEVICE_ID_LOGITECH_G29_WHEEL) {
+			lg4ff_devices[i].product_id == USB_DEVICE_ID_LOGITECH_G29_WHEEL ||
+			lg4ff_devices[i].product_id == USB_DEVICE_ID_LOGITECH_G923_PS_WHEEL) {
 		struct led_classdev *led;
 		size_t name_sz;
 		char *name;
